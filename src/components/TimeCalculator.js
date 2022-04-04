@@ -1,9 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from "axios";
+
+function padTo2Digits(num) {
+  return num.toString().padStart(2, '0');
+}
+
+function convertMinutesToHHmm(totalMinutes) {
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
+}
 
 export default function TimeCalculator() {
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  const [startTime, setStartTime] = useState('');
+  const [endTime, setEndTime] = useState('');
+  const [history, setHistory] = useState([]);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    const startEncoded = encodeURI(startTime);
+    const endEncoded = encodeURI(endTime);
+    const endpoint = `/time-calculator/calculate/${startEncoded}/${endEncoded}`;
+    axios.get(BACKEND_URL + endpoint)
+      .then(res => {
+        setHistory([{ ...res.data, start: startTime, end: endTime }, ...history]);
+        setStartTime("");
+        setEndTime("");
+      });
+  }
+
   const tdPadding = { padding: "5px" };
+
+  function History(props) {
+    const fontSizeForLast = { fontSize: "18px" };
+    const items = props.items.map((item, i) =>
+      <tr key={i} style={i === 0 ? fontSizeForLast : {}}>
+        <td style={tdPadding}>{item.start} até {item.end}</td>
+        <td style={tdPadding}>{convertMinutesToHHmm(item.daytimeInMinutes)}</td>
+        <td style={tdPadding}>{convertMinutesToHHmm(item.nocturnalInMinutes)}</td>
+      </tr>
+    );
+    return items;
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div className='card-panel z-depth-5' style={{ marginTop: "50px" }}>
         <div className="row">
           <div className="col s12">
@@ -12,17 +54,21 @@ export default function TimeCalculator() {
           <div className="input-field col s4 offset-s2">
             <input
               id='start-time'
+              value={startTime}
+              onInput={e => setStartTime(e.target.value)}
               type="text"
-              className="validate"
-              placeholder="HH:mm" />
+              placeholder="HH:mm"
+            />
             <label htmlFor="start-time">Início</label>
           </div>
           <div className="input-field col s4">
             <input
               id='end-time'
-              type="email"
-              className="validate"
-              placeholder="HH:mm" />
+              value={endTime}
+              onInput={e => setEndTime(e.target.value)}
+              type="text"
+              placeholder="HH:mm"
+            />
             <label htmlFor="end-time">Fim</label>
           </div>
           <div className="col s8 offset-s2">
@@ -47,22 +93,15 @@ export default function TimeCalculator() {
                 </tr>
               </thead>
               <tbody>
-                <tr style={{ fontSize: "18px" }}>
-                  <td style={tdPadding}>19:00 até 23:00</td>
-                  <td style={tdPadding}>03:00</td>
-                  <td style={tdPadding}>01:00</td>
-                </tr>
-                <tr>
-                  <td style={tdPadding}>19:00 até 23:00</td>
-                  <td style={tdPadding}>03:00</td>
-                  <td style={tdPadding}>01:00</td>
-                </tr>
-                <tr>
-                  <td style={tdPadding}>19:00 até 23:00</td>
-                  <td style={tdPadding}>03:00</td>
-                  <td style={tdPadding}>01:00</td>
-                </tr>
+                <History items={history} />
               </tbody>
+              <tfoot>
+                <tr>
+                  <td className='center' colSpan={3}>
+                    <small>* ao recarregar a página o histórico será perdido</small>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
         </div>
