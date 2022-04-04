@@ -17,6 +17,7 @@ export default function TimeCalculator() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [history, setHistory] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const validateStartTime = (e) => TimeValidationOnTheFly(e.target.value, setStartTime);
   const validateEndTime = (e) => TimeValidationOnTheFly(e.target.value, setEndTime);
@@ -26,11 +27,13 @@ export default function TimeCalculator() {
     const startEncoded = encodeURI(startTime);
     const endEncoded = encodeURI(endTime);
     const endpoint = `/time-calculator/calculate/${startEncoded}/${endEncoded}`;
+    setLoading(true);
     axios.get(BACKEND_URL + endpoint)
       .then(res => {
         setHistory([{ ...res.data, start: startTime, end: endTime }, ...history]);
         setStartTime("");
         setEndTime("");
+        setLoading(false);
       });
   }
 
@@ -57,6 +60,7 @@ export default function TimeCalculator() {
           </div>
           <div className="input-field col s4 offset-s2">
             <input
+              disabled={loading ? true : false}
               value={startTime}
               onChange={validateStartTime}
               type="text"
@@ -67,6 +71,7 @@ export default function TimeCalculator() {
           </div>
           <div className="input-field col s4">
             <input
+              disabled={loading ? true : false}
               value={endTime}
               onChange={validateEndTime}
               type="text"
@@ -77,11 +82,16 @@ export default function TimeCalculator() {
           </div>
           <div className="col s8 offset-s2">
             <button
-              className="btn waves-effect waves-light pink accent-2"
+              className={`btn waves-effect waves-light pink accent-2 ${loading ? "disabled" : ""}`}
               style={{ width: "100%" }}
               type="submit"
             >
-              Calcular horas
+              {loading && (
+                <div className="progress cyan lighten-5" style={{ marginTop: "14px" }}>
+                  <div className="indeterminate cyan darken-1"></div>
+                </div>
+              )}
+              {!loading && "Calcular horas"}
             </button>
           </div>
         </div>
