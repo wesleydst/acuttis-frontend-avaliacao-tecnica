@@ -18,8 +18,13 @@ export default function TimeCalculator() {
   const validateStartTime = (e) => TimeValidationOnTheFly(e.target.value, setStartTime);
   const validateEndTime = (e) => TimeValidationOnTheFly(e.target.value, setEndTime);
 
-  async function handleSubmit(e)  {
+  async function handleSubmit(e) {
     e.preventDefault();
+
+    if (startTime === endTime) {
+      setErrorMessage("As datas não podem ser iguais");
+      return;
+    }
 
     setErrorMessage(null); // limpa erro anterior caso exista
     setLoading(true);
