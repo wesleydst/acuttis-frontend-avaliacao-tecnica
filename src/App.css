@@ -1,7 +1,10 @@
+/* sticky footer - https://materializecss.com/footer.html#sticky-footer */
 #root {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
-  background-color: rgb(54, 54, 54);
-  color: white;
+}
+
+main {
+  flex: 1 0 auto;
 }
