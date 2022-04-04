@@ -30,8 +30,8 @@ export default function TimeCalculator() {
     setLoading(true);
     try {
       // constroi a url para chamada
-      const startEncoded = encodeURI(startTime);
-      const endEncoded = encodeURI(endTime);
+      const startEncoded = encodeURIComponent(startTime);
+      const endEncoded = encodeURIComponent(endTime);
       const uri = `/time-calculator/calculate/${startEncoded}/${endEncoded}`;
       const url = BACKEND_URL + uri;
 
