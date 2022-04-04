@@ -2,16 +2,6 @@ import React, { useState } from 'react';
 import axios from "axios";
 import TimeValidationOnTheFly from "./../util/TimeValidation";
 
-function padTo2Digits(num) {
-  return num.toString().padStart(2, '0');
-}
-
-function convertMinutesToHHmm(totalMinutes) {
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  return `${padTo2Digits(hours)}:${padTo2Digits(minutes)}`;
-}
-
 export default function TimeCalculator() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
   const [startTime, setStartTime] = useState('');
