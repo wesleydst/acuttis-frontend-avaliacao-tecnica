@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from "axios";
+import TimeValidationOnTheFly from "./../util/TimeValidation";
 
 function padTo2Digits(num) {
   return num.toString().padStart(2, '0');
@@ -16,6 +17,9 @@ export default function TimeCalculator() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
   const [history, setHistory] = useState([]);
+
+  const validateStartTime = (e) => TimeValidationOnTheFly(e.target.value, setStartTime);
+  const validateEndTime = (e) => TimeValidationOnTheFly(e.target.value, setEndTime);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -53,21 +57,21 @@ export default function TimeCalculator() {
           </div>
           <div className="input-field col s4 offset-s2">
             <input
-              id='start-time'
               value={startTime}
-              onInput={e => setStartTime(e.target.value)}
+              onChange={validateStartTime}
               type="text"
               placeholder="HH:mm"
+              id='start-time'
             />
             <label htmlFor="start-time">Início</label>
           </div>
           <div className="input-field col s4">
             <input
-              id='end-time'
               value={endTime}
-              onInput={e => setEndTime(e.target.value)}
+              onChange={validateEndTime}
               type="text"
               placeholder="HH:mm"
+              id='end-time'
             />
             <label htmlFor="end-time">Fim</label>
           </div>
