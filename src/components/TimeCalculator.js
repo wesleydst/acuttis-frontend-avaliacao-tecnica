@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import axios from "axios";
 import TimeValidationOnTheFly from "./../util/TimeValidation";
+import History from "./time_calculator/History";
+import LoadingSubmitButton from './time_calculator/LoadingButton';
+import InputTime from './time_calculator/InputTime';
 
 export default function TimeCalculator() {
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -27,20 +30,6 @@ export default function TimeCalculator() {
       });
   }
 
-  const tdPadding = { padding: "5px" };
-
-  function History(props) {
-    const fontSizeForLast = { fontSize: "18px" };
-    const items = props.items.map((item, i) =>
-      <tr key={i} style={i === 0 ? fontSizeForLast : {}}>
-        <td style={tdPadding}>{item.start} até {item.end}</td>
-        <td style={tdPadding}>{convertMinutesToHHmm(item.daytimeInMinutes)}</td>
-        <td style={tdPadding}>{convertMinutesToHHmm(item.nocturnalInMinutes)}</td>
-      </tr>
-    );
-    return items;
-  }
-
   return (
     <form onSubmit={handleSubmit}>
       <div className='card-panel z-depth-5' style={{ marginTop: "50px" }}>
@@ -48,65 +37,26 @@ export default function TimeCalculator() {
           <div className="col s12">
             <h6 className='center'>Informe o período de trabalho:</h6>
           </div>
-          <div className="input-field col s4 offset-s2">
-            <input
-              disabled={loading ? true : false}
-              value={startTime}
-              onChange={validateStartTime}
-              type="text"
-              placeholder="HH:mm"
-              id='start-time'
-            />
-            <label htmlFor="start-time">Início</label>
-          </div>
-          <div className="input-field col s4">
-            <input
-              disabled={loading ? true : false}
-              value={endTime}
-              onChange={validateEndTime}
-              type="text"
-              placeholder="HH:mm"
-              id='end-time'
-            />
-            <label htmlFor="end-time">Fim</label>
-          </div>
+          <InputTime id="start-time" label="Início" className="offset-s2"
+            disabled={loading}
+            value={startTime}
+            onChange={validateStartTime}
+          />
+          <InputTime id="end-time" label="Fim"
+            disabled={loading}
+            value={endTime}
+            onChange={validateEndTime}
+          />
           <div className="col s8 offset-s2">
-            <button
-              className={`btn waves-effect waves-light pink accent-2 ${loading ? "disabled" : ""}`}
-              style={{ width: "100%" }}
-              type="submit"
-            >
-              {loading && (
-                <div className="progress cyan lighten-5" style={{ marginTop: "14px" }}>
-                  <div className="indeterminate cyan darken-1"></div>
-                </div>
-              )}
-              {!loading && "Calcular horas"}
-            </button>
+            <LoadingSubmitButton isLoading={loading} />
           </div>
         </div>
         <div className="row">
           <div className="col s12" style={{ marginTop: "20px" }}>
-            <table className='striped centered'>
-              <caption>Histórico</caption>
-              <thead>
-                <tr>
-                  <th style={tdPadding}>Período</th>
-                  <th style={tdPadding}>Diurno</th>
-                  <th style={tdPadding}>Noturno</th>
-                </tr>
-              </thead>
-              <tbody>
-                <History items={history} />
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td className='center' colSpan={3}>
-                    <small>* ao recarregar a página o histórico será perdido</small>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+            <History
+              items={history}
+              footerMessage="* ao recarregar a página o histórico será perdido"
+            />
           </div>
         </div>
       </div>
